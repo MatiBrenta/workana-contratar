@@ -106,6 +106,11 @@ body.show-notes .note{display:block}
 .facts div{display:flex;flex-direction:column;gap:2px;min-width:0}
 .facts strong{font-family:var(--f-display);font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
 .facts small{font-size:12.5px;color:var(--muted)}
+.hero-mail{display:flex;flex-direction:column;gap:8px}
+.hero-mail label{font-family:var(--f-ui);font-weight:600;font-size:14px;color:var(--ink)}
+.hero-mail-row{display:flex;gap:8px;flex-wrap:wrap}
+.hero-mail-row input{flex:1 1 220px;min-width:0;border:1.5px solid var(--line);border-radius:100px;padding:12px 16px;background:var(--bg);color:var(--ink)}
+.hero-mail-row input:focus{border-color:var(--blue);outline:none}
 .ai{display:flex;gap:10px;align-items:flex-start;font-size:14px;background:var(--bg);border:1px dashed var(--line);border-radius:12px;padding:12px}
 .ai .tag{font-family:var(--f-ui);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--purple);white-space:nowrap;padding-top:2px}
 
@@ -186,7 +191,7 @@ footer .wrap{padding-block:24px;font-size:13px;color:var(--muted);display:flex;j
   .solution.swap > *{opacity:.35}
 }
 </style>
-<style>html{color-scheme:light}[hidden]{display:none!important}img{max-width:100%}html{scroll-behavior:smooth}</style>
+<style>html{color-scheme:light;scroll-behavior:smooth}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
 <body>
 
@@ -250,10 +255,15 @@ footer .wrap{padding-block:24px;font-size:13px;color:var(--muted);display:flex;j
         <div><strong id="sol-start"></strong><small>para arrancar</small></div>
         <div><strong>30 días</strong><small>de garantía de reemplazo</small></div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn" type="button" id="cta-diag">Resolverlo con Workana</button>
-        <button class="btn ghost" type="button" id="cta-people">Ver perfiles para este problema</button>
-      </div>
+      <form class="hero-mail" id="hero-mail" novalidate>
+        <label for="hero-email">Recibe perfiles verificados para este problema</label>
+        <div class="hero-mail-row">
+          <input id="hero-email" type="email" autocomplete="email" placeholder="nombre@empresa.com">
+          <button class="btn" type="submit" id="cta-diag">Recibir perfiles</button>
+        </div>
+        <p class="err" id="hero-err" role="alert"></p>
+      </form>
+      <button class="btn ghost" type="button" id="cta-people" style="align-self:flex-start">Ver perfiles para este problema</button>
     </aside>
   </div>
 </section>
@@ -306,20 +316,35 @@ footer .wrap{padding-block:24px;font-size:13px;color:var(--muted);display:flex;j
         <p class="eyebrow">Diagnóstico · 2 minutos</p>
         <h2 id="diag-title">Cuéntanos tu problema y te mostramos el talento</h2>
         <ol id="diag-steps">
+          <li>Tu email de trabajo</li>
+          <li>Por cuánto tiempo</li>
           <li>Tu problema</li>
           <li>Qué está en juego</li>
-          <li>Cuántas personas</li>
-          <li>Dónde te enviamos los perfiles</li>
+          <li>Tus datos</li>
         </ol>
       </div>
       <form class="diag-main" id="diag-form" novalidate>
         <div id="step-1">
           <fieldset>
+            <legend>¿A qué email de trabajo te enviamos los perfiles?</legend>
+            <div class="field"><label for="f-email">Email de trabajo</label><input id="f-email" type="email" autocomplete="email" placeholder="nombre@empresa.com"></div>
+          </fieldset>
+        </div>
+        <div id="step-2" hidden>
+          <fieldset>
+            <legend>¿Por cuánto tiempo necesitas este talento?</legend>
+            <label class="opt"><input type="radio" name="dur" id="dur-long" value="long"> Más de 6 meses</label>
+            <label class="opt"><input type="radio" name="dur" id="dur-mid" value="mid"> De 3 a 6 meses</label>
+            <label class="opt"><input type="radio" name="dur" id="dur-short" value="short"> Menos de 3 meses</label>
+          </fieldset>
+        </div>
+        <div id="step-3" hidden>
+          <fieldset>
             <legend>¿Qué quieres resolver?</legend>
             <div id="diag-problems" style="display:flex;flex-direction:column;gap:8px"></div>
           </fieldset>
         </div>
-        <div id="step-2" hidden>
+        <div id="step-4" hidden>
           <fieldset>
             <legend>¿Qué pasa si no se resuelve en los próximos 3 meses?</legend>
             <label class="opt"><input type="radio" name="stake" id="stake-client" value="client"> Puedo perder un cliente o ingresos</label>
@@ -328,30 +353,26 @@ footer .wrap{padding-block:24px;font-size:13px;color:var(--muted);display:flex;j
             <label class="opt"><input type="radio" name="stake" id="stake-grow" value="grow"> No puedo crecer al ritmo que quiero</label>
             <label class="opt"><input type="radio" name="stake" id="stake-none" value="none"> Nada urgente, estoy explorando</label>
           </fieldset>
-        </div>
-        <div id="step-3" hidden>
-          <fieldset>
+          <fieldset style="margin-top:16px">
             <legend>¿Cuántas personas crees que hacen falta?</legend>
             <label class="opt"><input type="radio" name="size" id="size-1" value="1"> Una persona</label>
             <label class="opt"><input type="radio" name="size" id="size-2" value="2-5"> Entre 2 y 5</label>
             <label class="opt"><input type="radio" name="size" id="size-6" value="6+"> Más de 5</label>
             <label class="opt"><input type="radio" name="size" id="size-unk" value="unk"> No lo sé, lo definimos contigo</label>
-            <label class="opt"><input type="radio" name="size" id="size-project" value="project"> Es un proyecto puntual de pocas semanas</label>
           </fieldset>
         </div>
-        <div id="step-4" hidden>
+        <div id="step-5" hidden>
           <div class="match" id="match"></div>
-          <div class="field"><label for="f-email">Email de trabajo</label><input id="f-email" type="email" autocomplete="email" placeholder="nombre@empresa.com"></div>
           <div class="row2">
             <div class="field"><label for="f-name">Nombre</label><input id="f-name" autocomplete="name" placeholder="Ana Pérez"></div>
             <div class="field"><label for="f-role">Cargo</label><input id="f-role" autocomplete="organization-title" placeholder="Head of Operations"></div>
           </div>
           <div class="row2">
             <div class="field"><label for="f-company">Empresa</label><input id="f-company" autocomplete="organization" placeholder="Distribuidora del Sur"></div>
-            <div class="field"><label for="f-phone">Teléfono (opcional)</label><input id="f-phone" type="tel" autocomplete="tel" placeholder="+54 11 5555 0000"></div>
+            <div class="field"><label for="f-phone">Teléfono (opcional)</label><input id="f-phone" type="tel" autocomplete="tel" placeholder="+52 55 5555 0000"></div>
           </div>
         </div>
-        <div id="step-5" hidden class="result" aria-live="polite"></div>
+        <div id="step-6" hidden class="result" aria-live="polite"></div>
         <p class="err" id="err" role="alert"></p>
         <div class="nav-btns" id="nav-btns">
           <button class="btn ghost" type="button" id="back" hidden>Atrás</button>
@@ -378,6 +399,12 @@ const P = [
    ai:'Agentes y automatizaciones con LLMs donde hoy hay carga manual, con alguien a cargo de que sigan funcionando.',
    start:'2 sem',
    people:[['MH','Michael H.','Senior Software Engineer · México · 16 años','Automatizó más de 100 flujos con agentes GPT'],['AC','Alejandro C.','Software Developer · México · 6 años','Subió 25% la detección de defectos con machine learning']]},
+  {id:'ventas', t:'Necesito vender más y mi equipo comercial no alcanza',
+   title:'Talento comercial verificado que genera reuniones y cierra ventas',
+   team:[['SDR / BDR','Prospecta y agenda reuniones'],['Account executive','Lleva la venta hasta el cierre'],['Sales ops','CRM y reportes al día']],
+   ai:'Prospección y seguimiento con herramientas de IA: más contactos por día, con mensajes personalizados.',
+   start:'1 sem',
+   people:[['CR','Camila R.','SDR bilingüe · México · 5 años','Agendó 40 reuniones al mes para un SaaS B2B'],['AP','Andrés P.','Account executive · Colombia · 7 años','Cerró USD 1,2 M en contratos anuales en 2025']]},
   {id:'riesgo', t:'Estoy por perder un cliente, ingresos o una fecha',
    title:'Un especialista senior verificado cubre el frente urgente desde la primera semana',
    team:[['Especialista senior','Entra a resolver ya'],['Refuerzo para tu equipo','Libera a tu gente'],['Seguimiento de Workana','Revisión semanal']],
@@ -396,9 +423,9 @@ const P = [
    ai:'Verificamos el nivel de uso de IA de cada persona, así comparas perfiles con el mismo criterio.',
    start:'2 sem',
    people:[['DT','Diego T.','Senior Software Engineer · Chile · 7 años','Bajó de 8 a 2 horas un proceso de datos en una fintech'],['AC','Alejandro C.','Software Developer · México · 6 años','Subió 25% la detección de defectos con machine learning']]},
-  {id:'operar', t:'Necesito a alguien que opere marketing, ventas o soporte todos los días',
+  {id:'operar', t:'Necesito a alguien que opere marketing o soporte todos los días',
    title:'Alguien que opera tus sistemas todos los meses, no un entregable suelto',
-   team:[['Operador de marketing','Contenido y campañas con IA'],['SDR o soporte','Atiende y da seguimiento'],['Coordinación','Reporta resultados']],
+   team:[['Operador de marketing','Contenido y campañas con IA'],['Soporte al cliente','Atiende y da seguimiento'],['Coordinación','Reporta resultados']],
    ai:'La IA produce el contenido; el valor está en quien opera el sistema y le saca el máximo cada semana.',
    start:'1 sem',
    people:[['VS','Valentina S.','Marketing operations · Uruguay · 6 años','Llevó de 2 a 9 campañas por mes con el mismo presupuesto'],['RM','Rafael M.','Customer support lead · Brasil · 8 años','Bajó a la mitad el tiempo de respuesta con un bot y triage']]},
@@ -457,7 +484,15 @@ function showMarketplaceToast(){
   const t=$('home-title'); const old=t.textContent; t.textContent='En el producto real, esto abre "Publicar proyecto" en Marketplace';
   setTimeout(()=>{ t.textContent=old; },2600);
 }
-$('cta-diag').addEventListener('click',goDiag);
+$('hero-mail').addEventListener('submit',e=>{
+  e.preventDefault();
+  const em=$('hero-email').value.trim();
+  if(!EMAIL.test(em)) return $('hero-err').textContent='Escribe un email válido, por ejemplo nombre@empresa.com.';
+  $('hero-err').textContent=''; $('f-email').value=em;
+  $('diagnostico').scrollIntoView({behavior:'smooth'});
+  if(FREE.test(em)){ step=6; return renderResult('free'); }
+  step=2; showStep();
+});
 $('cta-people').addEventListener('click',()=>$('people').scrollIntoView({behavior:'smooth',block:'center'}));
 function goDiag(){ step=1; showStep(); $('diagnostico').scrollIntoView({behavior:'smooth'}); }
 
@@ -476,14 +511,16 @@ function renderDiagProblems(){
 }
 function val(name){ const c=document.querySelector('input[name="'+name+'"]:checked'); return c?c.value:null; }
 const FREE=/@(gmail|hotmail|outlook|yahoo|live|icloud|proton|uol|bol)\./i;
+const EMAIL=/^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const LAST=6;
 function showStep(){
-  for(let i=1;i<=5;i++) $('step-'+i).hidden = i!==step;
+  for(let i=1;i<=LAST;i++) $('step-'+i).hidden = i!==step;
   [...$('diag-steps').children].forEach((li,i)=>{ li.classList.toggle('done', i+1<step); if(i+1===step) li.setAttribute('aria-current','step'); else li.removeAttribute('aria-current'); });
-  $('back').hidden = step===1 || step===5;
-  $('nav-btns').hidden = step===5;
-  $('next').textContent = step===4 ? 'Ver el talento propuesto' : 'Siguiente';
+  $('back').hidden = step===1 || step===LAST;
+  $('nav-btns').hidden = step===LAST;
+  $('next').textContent = step===1 ? 'Continuar' : (step===5 ? 'Ver el talento propuesto' : 'Siguiente');
   $('err').textContent='';
-  if(step===4){
+  if(step===5){
     const sz=val('size'); const n={'1':1,'2-5':3,'6+':6,'unk':2}[sz]||1;
     const p=P.find(x=>x.id===val('problem'));
     $('match').innerHTML='';
@@ -493,23 +530,28 @@ function showStep(){
 $('back').addEventListener('click',()=>{ step=Math.max(1,step-1); showStep(); });
 $('diag-form').addEventListener('submit',e=>{
   e.preventDefault();
-  if(step===1 && !val('problem')) return $('err').textContent='Elige una opción para continuar.';
-  if(step===2 && !val('stake')) return $('err').textContent='Elige qué está en juego para continuar.';
-  if(step===3){
-    if(!val('size')) return $('err').textContent='Elige una opción para continuar.';
-    if(val('size')==='project'){ step=5; return renderResult('project'); }
-  }
-  if(step===4){
+  if(step===1){
     const em=$('f-email').value.trim();
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return $('err').textContent='Escribe un email válido, por ejemplo nombre@empresa.com.';
+    if(!EMAIL.test(em)) return $('err').textContent='Escribe un email válido, por ejemplo nombre@empresa.com.';
+    if(FREE.test(em)){ step=LAST; return renderResult('free'); }
+  }
+  if(step===2){
+    if(!val('dur')) return $('err').textContent='Elige una opción para continuar.';
+    if(val('dur')==='short'){ step=LAST; return renderResult('project'); }
+  }
+  if(step===3 && !val('problem')) return $('err').textContent='Elige una opción para continuar.';
+  if(step===4){
+    if(!val('stake')) return $('err').textContent='Elige qué está en juego para continuar.';
+    if(!val('size')) return $('err').textContent='Elige cuántas personas hacen falta.';
+  }
+  if(step===5){
     if(!$('f-name').value.trim()) return $('err').textContent='Escribe tu nombre para continuar.';
-    step=5; return renderResult(FREE.test(em)?'free':(val('stake')==='none'?'nurture':'qualified'));
+    step=LAST; return renderResult(val('stake')==='none'?'nurture':'qualified');
   }
   step++; showStep();
 });
-
 function renderResult(kind){
-  showStep(); const r=$('step-5'); r.textContent='';
+  showStep(); const r=$('step-6'); r.textContent='';
   if(kind==='qualified'){
     r.append(el('h3',{},'Listo. Elige un horario para ver el talento propuesto'), el('p',{},'Una llamada de 20 minutos con alguien que ya resolvió problemas como el tuyo. Antes de la llamada te enviamos los primeros perfiles.'));
     const s=el('div',{class:'slots'});
@@ -518,15 +560,15 @@ function renderResult(kind){
     r.append(s, conf);
   } else if(kind==='free'){
     r.append(el('h3',{},'¿Contratas para una empresa o para un proyecto propio?'), el('p',{},'Con un email de trabajo te presentamos talento verificado full-time. Si es un proyecto propio, en Marketplace recibes propuestas de freelancers hoy mismo.'));
-    const b=el('div',{class:'nav-btns'}); const a=el('button',{type:'button',class:'btn'},'Usar mi email de trabajo'); a.addEventListener('click',()=>{ step=4; showStep(); $('f-email').focus(); });
+    const b=el('div',{class:'nav-btns'}); const a=el('button',{type:'button',class:'btn'},'Usar mi email de trabajo'); a.addEventListener('click',()=>{ step=1; showStep(); $('f-email').value=''; $('f-email').focus(); });
     const m=el('button',{type:'button',class:'btn ghost'},'Publicar mi proyecto en Marketplace'); b.append(a,m); r.append(b);
   } else if(kind==='project'){
-    r.append(el('h3',{},'Para un proyecto puntual, Marketplace es más rápido'), el('p',{},'Publicas el proyecto, recibes propuestas de freelancers en horas y pagas solo lo acordado. Si después el problema continúa, vuelves aquí y te presentamos talento verificado.'));
+    r.append(el('h3',{},'Para menos de 3 meses, Marketplace es más rápido'), el('p',{},'Publicas el proyecto, recibes propuestas de freelancers en horas y pagas solo lo acordado. Si después el problema continúa, vuelves aquí y te presentamos talento verificado.'));
     const m=el('button',{type:'button',class:'btn'},'Publicar proyecto con mi problema precargado'); r.append(m);
   } else {
     r.append(el('h3',{},'Gracias. Te enviamos perfiles de referencia por email'), el('p',{},'Como todavía estás explorando, te enviamos ejemplos de talento para tu problema. Cuando quieras avanzar, responde el correo y coordinamos.'));
   }
-  const again=el('button',{type:'button',class:'btn ghost'},'Volver a empezar'); again.addEventListener('click',()=>{ $('diag-form').reset(); renderDiagProblems(); step=1; showStep(); }); r.append(again);
+  const again=el('button',{type:'button',class:'btn ghost'},'Volver a empezar'); again.addEventListener('click',()=>{ $('diag-form').reset(); $('hero-email').value=''; renderDiagProblems(); step=1; showStep(); }); r.append(again);
 }
 
 select('entrega',false); showStep();
